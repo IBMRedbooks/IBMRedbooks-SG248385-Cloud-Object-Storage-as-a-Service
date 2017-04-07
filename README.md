@@ -1,7 +1,7 @@
-Implementation of the scenario
+Implementation of the Web Gallery scenario
 ==============================
 
-This section covers the step by step implementation of the Web Gallery scenario.
+This document covers the step by step implementation of the Web Gallery scenario.
 
 Getting started
 ---------------
