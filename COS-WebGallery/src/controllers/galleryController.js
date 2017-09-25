@@ -1,10 +1,19 @@
 var galleryController = function(title) {
 
-    var aws = require('ibm-cos-sdk');
+    var aws = require('aws-sdk');
+    var awsConfig = require('aws-config');
     var multer = require('multer');
     var multerS3 = require('multer-s3');
-    var ep = new aws.Endpoint('https://s3-api.us-geo.objectstorage.softlayer.net');
-    var s3 = new aws.S3({endpoint: ep, region: 'us-east-1'});
+    
+    // IF Reading from VCAP_SERVICES as after binding credentials
+    var vcap_services = JSON.parse(process.env.VCAP_SERVICES);
+    var credentailsJson = vcap_services['Object Storage Dedicated'][0]['credentials'];
+
+    var s3 = new aws.S3(awsConfig({endpoint: credentailsJson['endpoint-url'],region: credentailsJson['region'], accessKeyId: credentailsJson['accessKeyID'], secretAccessKey: credentailsJson['secretAccessKey']}));
+    
+    // If Directly reading from application code 
+    //var s3 = new aws.S3(awsConfig({endpoint: 'https://eu-geo.dys1.ibm.objstor.com',region: 'container_dsnet_config_vault', accessKeyId: 'A6RfdinfRc474yLAAoVi', secretAccessKey: 'ePIQWSaEWtpI1qBxZb8MF3BMeHNKbSLxCFo0pL3v'}));
+    
     var myBucket = 'web-images';
 
     var upload = multer({
@@ -29,7 +38,6 @@ var galleryController = function(title) {
                 for (var i = 0; i < bucketContents.length; i++) {
                     if(bucketContents[i].Key.search(/.jpg/i) > -1) {
                         var urlParams = {Bucket: myBucket, Key: bucketContents[i].Key};
-
                         s3.getSignedUrl('getObject', urlParams, function (err, url) {
                             imageUrlList[i] = url;
                         });
