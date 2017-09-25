@@ -1,5 +1,0 @@
----
-applications:
- - name: COS-WebGallery
-   random-route: true
-   memory: 256M
